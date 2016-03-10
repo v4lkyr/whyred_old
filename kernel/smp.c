@@ -108,13 +108,13 @@ void __init call_function_init(void)
  * previous function call. For multi-cpu calls its even more interesting
  * as we'll have to ensure no other cpu is observing our csd.
  */
-static void csd_lock_wait(call_single_data_t *csd)
+static __always_inline void csd_lock_wait(call_single_data_t *csd)
 {
 	while (smp_load_acquire(&csd->flags) & CSD_FLAG_LOCK)
 		cpu_relax();
 }
 
-static void csd_lock(call_single_data_t *csd)
+static __always_inline void csd_lock(call_single_data_t *csd)
 {
 	csd_lock_wait(csd);
 	csd->flags |= CSD_FLAG_LOCK;
@@ -127,7 +127,7 @@ static void csd_lock(call_single_data_t *csd)
 	smp_wmb();
 }
 
-static void csd_unlock(call_single_data_t *csd)
+static __always_inline void csd_unlock(call_single_data_t *csd)
 {
 	WARN_ON(!(csd->flags & CSD_FLAG_LOCK));
 
