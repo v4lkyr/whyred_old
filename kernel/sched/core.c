@@ -2191,7 +2191,6 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
         smp_mb__after_spinlock();
 
-
 	if (!(p->state & state))
 		goto unlock;
 
