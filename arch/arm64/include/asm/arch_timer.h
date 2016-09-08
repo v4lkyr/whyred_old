@@ -108,7 +108,6 @@ static inline u64 arch_counter_get_cntpct(void)
 static inline u64 arch_counter_get_cntvct(void)
 {
 	u64 cval;
-
 	isb();
 #if IS_ENABLED(CONFIG_MSM_TIMER_LEAP)
 #define L32_BITS	0x00000000FFFFFFFF
@@ -118,7 +117,6 @@ static inline u64 arch_counter_get_cntvct(void)
 #else
 	cval = read_sysreg(cntvct_el0);
 #endif
-
 	return cval;
 }
 
