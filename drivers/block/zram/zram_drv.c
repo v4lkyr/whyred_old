@@ -884,6 +884,11 @@ static void zram_accessed(struct zram *zram, u32 index)
 	zram->table[index].ac_time = ktime_get_boottime();
 }
 
+static void zram_reset_access(struct zram *zram, u32 index)
+{
+	zram->table[index].ac_time = 0;
+}
+
 static ssize_t read_block_state(struct file *file, char __user *buf,
 				size_t count, loff_t *ppos)
 {
