@@ -506,6 +506,7 @@ static void msm_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 	unsigned i;
 
 	for (i = 0; i < chip->ngpio; i++, gpio++) {
+
 /*Add-begin-HMI_M6100_A01-8
 **Author:lijiang@longcheer.com
 **Date:2018-8-11
@@ -517,6 +518,11 @@ static void msm_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 			seq_puts(s, "\n");
 		}
 #else
+
+		/* Bypass GPIO pins owned by TZ */
+		switch (gpio)
+			case 81 ... 84: continue;
+
 		msm_gpio_dbg_show_one(s, NULL, chip, i, gpio);
 		seq_puts(s, "\n");
 #endif
