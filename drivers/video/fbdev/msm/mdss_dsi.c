@@ -668,7 +668,6 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
-	ctrl_pdata->err_fg_flag = false;
 
 	pinfo = &ctrl_pdata->panel_data.panel_info;
 
@@ -2215,8 +2214,10 @@ static int mdss_dsi_unblank(struct mdss_panel_data *pdata)
 	if ((pdata->panel_info.type == MIPI_CMD_PANEL) &&
 		mipi->vsync_enable && mipi->hw_vsync_mode) {
 		mdss_dsi_set_tear_on(ctrl_pdata);
-		if (mdss_dsi_is_te_based_esd(ctrl_pdata))
-			enable_irq(gpio_to_irq(ctrl_pdata->disp_te_gpio));
+		if (mdss_dsi_is_te_based_esd(ctrl_pdata)) {
+			/* let the recovery mechanism work */
+			atomic_set(&ctrl_pdata->te_irq_ready, 1);
+		}
 	}
 
 	ctrl_pdata->ctrl_state |= CTRL_STATE_PANEL_INIT;
@@ -2287,8 +2288,6 @@ static int mdss_dsi_blank(struct mdss_panel_data *pdata, int power_state)
 	if ((pdata->panel_info.type == MIPI_CMD_PANEL) &&
 		mipi->vsync_enable && mipi->hw_vsync_mode) {
 		if (mdss_dsi_is_te_based_esd(ctrl_pdata)) {
-				disable_irq(gpio_to_irq(
-					ctrl_pdata->disp_te_gpio));
 				atomic_dec(&ctrl_pdata->te_irq_ready);
 		}
 		mdss_dsi_set_tear_off(ctrl_pdata);
@@ -3582,7 +3581,14 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 		rc = mdss_dsi_reconfig(pdata, mode);
 		break;
 	case MDSS_EVENT_DSI_PANEL_STATUS:
-		rc = mdss_dsi_check_panel_status(ctrl_pdata, arg);
+		if (ctrl_pdata->check_status)
+			rc = mdss_dsi_check_panel_status(ctrl_pdata, arg);
+		else {
+			/* check TE status */
+			pr_info("check TE status\n");
+			check_dsi_ctrl_status_ext();
+			mdss_dsi_sw_reset(ctrl_pdata, true);
+		}
 		break;
 	case MDSS_EVENT_PANEL_TIMING_SWITCH:
 		rc = mdss_dsi_panel_timing_switch(ctrl_pdata, arg);
