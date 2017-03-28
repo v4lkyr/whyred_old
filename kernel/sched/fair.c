@@ -2934,6 +2934,28 @@ __update_load_avg(u64 now, int cpu, struct sched_avg *sa,
 	return decayed;
 }
 
+static int
+__update_load_avg_blocked_se(u64 now, int cpu, struct sched_entity *se)
+{
+	return ___update_load_avg(now, cpu, &se->avg, 0, 0, NULL);
+}
+
+static int
+__update_load_avg_se(u64 now, int cpu, struct cfs_rq *cfs_rq, struct sched_entity *se)
+{
+	return ___update_load_avg(now, cpu, &se->avg,
+				  se->on_rq * scale_load_down(se->load.weight),
+				  cfs_rq->curr == se, NULL);
+}
+
+static int
+__update_load_avg_cfs_rq(u64 now, int cpu, struct cfs_rq *cfs_rq)
+{
+	return ___update_load_avg(now, cpu, &cfs_rq->avg,
+			scale_load_down(cfs_rq->load.weight),
+			cfs_rq->curr != NULL, cfs_rq);
+}
+
 /*
  * Signed add and clamp on underflow.
  *
