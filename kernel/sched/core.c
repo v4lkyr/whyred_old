@@ -78,8 +78,6 @@
 #include <linux/prefetch.h>
 #include <linux/cpufreq.h>
 
-#include <linux/kcov.h>
-
 #include <asm/switch_to.h>
 #include <asm/tlb.h>
 #include <asm/irq_regs.h>
