@@ -1042,7 +1042,9 @@ struct mdss_dsi_debugfs_info {
 	struct dentry *root;
 	struct mdss_dsi_ctrl_pdata ctrl_pdata;
 	struct buf_data on_cmd;
+	struct buf_data post_on_cmd;
 	struct buf_data off_cmd;
+	struct buf_data alpm_cmd[ALPM_MODE_MAX];
 	u32 override_flag;
 };
 
@@ -1380,6 +1382,19 @@ static int mdss_dsi_debugfs_setup(struct mdss_panel_data *pdata,
 				ctrl_pdata->on_cmds);
 	DEBUGFS_CREATE_DCS_CMD("dsi_off_cmd", dfs->root, &dfs->off_cmd,
 				ctrl_pdata->off_cmds);
+
+	DEBUGFS_CREATE_DCS_CMD("alpm_off_cmd", dfs->root,
+			       &dfs->alpm_cmd[ALPM_MODE_OFF],
+			       ctrl_pdata->alpm_mode_cmds[ALPM_MODE_OFF]);
+	DEBUGFS_CREATE_DCS_CMD("alpm_low_cmd", dfs->root,
+			       &dfs->alpm_cmd[ALPM_MODE_LOW],
+			       ctrl_pdata->alpm_mode_cmds[ALPM_MODE_LOW]);
+	DEBUGFS_CREATE_DCS_CMD("alpm_high_cmd", dfs->root,
+			       &dfs->alpm_cmd[ALPM_MODE_HIGH],
+			       ctrl_pdata->alpm_mode_cmds[ALPM_MODE_HIGH]);
+	DEBUGFS_CREATE_DCS_CMD("alpm_bright_cmd", dfs->root,
+			       &dfs->alpm_cmd[ALPM_MODE_BRIGHT],
+			       ctrl_pdata->alpm_mode_cmds[ALPM_MODE_BRIGHT]);
 
 	debugfs_create_u32("dsi_err_counter", 0644, dfs->root,
 			   &dfs_ctrl->err_cont.max_err_index);
