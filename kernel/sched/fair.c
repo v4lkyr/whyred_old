@@ -6909,6 +6909,7 @@ static inline int find_best_target(struct task_struct *p, int *backup_cpu,
 			unsigned long wake_util, new_util, min_capped_util;
 			long spare_cap;
 			int idle_idx = INT_MAX;
+			long spare_cap;
 
 			if (!cpu_online(i))
 				continue;
