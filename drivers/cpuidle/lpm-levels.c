@@ -121,10 +121,6 @@ module_param_named(sleep_time_override,
 	msm_pm_sleep_time_override, int, S_IRUGO | S_IWUSR | S_IWGRP);
 static uint64_t suspend_wake_time;
 
-static bool sleep_disabled;
-module_param_named(sleep_disabled,
-	sleep_disabled, bool, S_IRUGO | S_IWUSR | S_IWGRP);
-
 void lpm_suspend_wake_time(uint64_t wakeup_time)
 {
 	if (wakeup_time <= 0) {
@@ -514,9 +510,6 @@ static int cpu_power_select(struct cpuidle_device *dev,
 
 	if (!cpu)
 		return -EINVAL;
-
-	if ((sleep_disabled && !cpu_isolated(dev->cpu)) || sleep_us  < 0)
-		return 0;
 
 	idx_restrict = cpu->nlevels + 1;
 
