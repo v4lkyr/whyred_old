@@ -194,5 +194,7 @@
 		qcom,ulps-enabled;
 		qcom,suspend-ulps-enabled;
 		qcom,panel-ack-disabled;
+		qcom,mdss-dsi-pan-enable-dynamic-fps;
+		qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 	};
 };
