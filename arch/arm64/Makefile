@@ -16,7 +16,13 @@ OBJCOPYFLAGS	:=-O binary -R .note -R .note.gnu.build-id -R .comment -S
 GZFLAGS		:=-9
 
 ifneq ($(CONFIG_RELOCATABLE),)
-LDFLAGS_vmlinux		+= -pie -Bsymbolic
+ifdef CONFIG_LD_GOLD
+LDFLAGS_vmlinux		+= -Bsymbolic \
+			$(call ld-option, --no-apply-dynamic-relocs)
+else
+LDFLAGS_vmlinux		+= -pie -Bsymbolic \
+			$(call ld-option, --no-apply-dynamic-relocs)
+endif
 endif
 
 KBUILD_DEFCONFIG := defconfig
@@ -29,6 +35,13 @@ ifeq ($(CONFIG_ARM64_LSE_ATOMICS), y)
 $(warning LSE atomics not supported by binutils)
   endif
 endif
+
+KBUILD_CFLAGS	+= $(call cc-option,-march=armv8-a+crypto+crc,)
+#KBUILD_CFLAGS	+= $(call cc-option,-mcpu=kryo,)
+KBUILD_CFLAGS	+= $(call cc-option,-mtune=cortex-a73.cortex-a53,)
+
+GEN_FLAGS 	:= -fopenmp
+KBUILD_CFLAGS	+= $(GEN_FLAGS)
 
 ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= $(call clang-ifversion, -ge, 0600, -mgeneral-regs-only, -mno-implicit-float)
