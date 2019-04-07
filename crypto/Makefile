@@ -136,3 +136,11 @@ obj-$(CONFIG_ASYNC_CORE) += async_tx/
 obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
 obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
 obj-$(CONFIG_CRYPTO_ABLK_HELPER) += ablk_helper.o
+
+ifeq ($(cc-name),gcc)
+ccflags-y	:= -Ofast \
+		   -march=armv8-a+crc+crypto \
+		   -mcpu=cortex-a73.cortex-a53 \
+		   -mtune=cortex-a73.cortex-a53 \
+		   -DUSE_V8_CRYPTO_EXTENSIONS
+endif 
