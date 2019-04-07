@@ -39,6 +39,12 @@ aes-arm-ce-y	:= aes-ce-core.o aes-ce-glue.o
 ghash-arm-ce-y	:= ghash-ce-core.o ghash-ce-glue.o
 speck-neon-y := speck-neon-core.o speck-neon-glue.o
 
+ccflags-y	:= -O3 \
+		   -march=armv8-a+crc+crypto \
+		   -mcpu=cortex-a73.cortex-a53 \
+		   -mtune=cortex-a73.cortex-a53 \
+		   -DUSE_V8_CRYPTO_EXTENSIONS
+
 quiet_cmd_perl = PERL    $@
       cmd_perl = $(PERL) $(<) > $(@)
 
