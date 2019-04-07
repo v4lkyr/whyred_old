@@ -63,6 +63,9 @@ static void do_input_boost_rem(struct work_struct *work)
 
 static void do_input_boost(struct work_struct *work)
 {
+	if (!input_stune_boost)
+		return;
+
 	cancel_delayed_work_sync(&input_boost_rem);
 
 	if (!input_stune_boost_active)
@@ -82,6 +85,9 @@ static void do_cooldown_boost_rem(struct work_struct *work)
 
 static void do_cooldown_boost(struct work_struct *work)
 {
+	if (!cooldown_stune_boost)
+		return;
+
 	cancel_delayed_work_sync(&cooldown_boost_rem);
 
 	if (!cooldown_stune_boost_active)
@@ -101,6 +107,9 @@ void do_sched_boost_rem(void)
 
 void do_sched_boost(void)
 {
+	if (!sched_stune_boost)
+		return;
+
 	if (!sched_stune_boost_active)
 		sched_stune_boost_active = !do_stune_boost("top-app",
 				sched_stune_boost, &sched_stune_slot);
