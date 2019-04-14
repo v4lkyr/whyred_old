@@ -27,14 +27,14 @@ static struct work_struct cooldown_boost_work;
 static struct delayed_work input_boost_rem;
 static struct delayed_work cooldown_boost_rem;
 
-static __read_mostly unsigned short input_boost_ms = CONFIG_INPUT_BOOST_MS;
-static __read_mostly unsigned short cooldown_boost_ms = CONFIG_COOLDOWN_BOOST_MS;
+static __read_mostly unsigned short input_boost_duration = CONFIG_INPUT_BOOST_DURATION;
+static __read_mostly unsigned short cooldown_boost_duration = CONFIG_COOLDOWN_BOOST_DURATION;
 static __read_mostly unsigned short input_stune_boost = CONFIG_INPUT_STUNE_BOOST;
 static __read_mostly unsigned short cooldown_stune_boost = CONFIG_COOLDOWN_STUNE_BOOST;
 static __read_mostly unsigned short sched_stune_boost = CONFIG_SCHED_STUNE_BOOST;
 
-module_param(input_boost_ms, ushort, 0644);
-module_param(cooldown_boost_ms, ushort, 0644);
+module_param(input_boost_duration, ushort, 0644);
+module_param(cooldown_boost_duration, ushort, 0644);
 module_param(input_stune_boost, ushort, 0644);
 module_param(cooldown_stune_boost, ushort, 0644);
 module_param(sched_stune_boost, ushort, 0644);
@@ -50,7 +50,7 @@ static bool sched_stune_boost_active;
 static u64 last_input_time;
 
 /* How long after an input before another input boost can be triggered */
-#define MIN_INPUT_INTERVAL (input_boost_ms * USEC_PER_MSEC)
+#define MIN_INPUT_INTERVAL (input_boost_duration * USEC_PER_MSEC)
 
 static void do_input_boost_rem(struct work_struct *work)
 {
@@ -73,7 +73,7 @@ static void do_input_boost(struct work_struct *work)
 	}
 
 	queue_delayed_work(cpu_boost_wq, &input_boost_rem,
-					msecs_to_jiffies(input_boost_ms));
+					msecs_to_jiffies(input_boost_duration));
 }
 
 static void do_cooldown_boost_rem(struct work_struct *work)
@@ -95,7 +95,7 @@ static void do_cooldown_boost(struct work_struct *work)
 	}
 
 	queue_delayed_work(cpu_boost_wq, &cooldown_boost_rem,
-					msecs_to_jiffies(cooldown_boost_ms));
+					msecs_to_jiffies(cooldown_boost_duration));
 }
 
 void do_sched_boost_rem(void)
