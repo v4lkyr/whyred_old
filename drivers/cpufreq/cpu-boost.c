@@ -214,8 +214,10 @@ static int cpu_boost_init(void)
 	int ret;
 
 	cpu_boost_wq = alloc_workqueue("cpuboost_wq", WQ_HIGHPRI, 0);
-	if (!cpu_boost_wq)
-		return -EFAULT;
+	if (!cpu_boost_wq) {
+		ret = -ENOMEM;
+		goto err_wq;
+	}
 
 	INIT_WORK(&input_boost_work, do_input_boost);
 	INIT_WORK(&cooldown_boost_work, do_cooldown_boost);
@@ -223,6 +225,14 @@ static int cpu_boost_init(void)
 	INIT_DELAYED_WORK(&cooldown_boost_rem, do_cooldown_boost_rem);
 
 	ret = input_register_handler(&cpuboost_input_handler);
+	if (ret)
+		goto err_input;
+
+	return 0;
+err_input:
+	input_unregister_handler(&cpuboost_input_handler);
+err_wq:
+	destroy_workqueue(cpu_boost_wq);
 
 	return ret;
 }
