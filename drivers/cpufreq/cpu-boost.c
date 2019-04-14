@@ -14,12 +14,12 @@
 
 #define pr_fmt(fmt) "cpu-boost: " fmt
 
+#include <linux/cpu-boost.h>
+#include <linux/input.h>
 #include <linux/moduleparam.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-#include <linux/input.h>
 #include <linux/time.h>
-#include <linux/cpu-boost.h>
 
 static struct workqueue_struct *cpu_boost_wq;
 
