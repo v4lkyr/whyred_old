@@ -15,6 +15,7 @@
 #define pr_fmt(fmt) "cpu-boost: " fmt
 
 #include <linux/moduleparam.h>
+#include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/time.h>
@@ -202,6 +203,12 @@ static struct input_handler cpuboost_input_handler = {
 	.id_table       = cpuboost_ids,
 };
 
+static void cpu_boost_exit(void)
+{
+	input_unregister_handler(&cpuboost_input_handler);
+	destroy_workqueue(cpu_boost_wq);
+}
+
 static int cpu_boost_init(void)
 {
 	int ret;
@@ -220,3 +227,4 @@ static int cpu_boost_init(void)
 	return ret;
 }
 late_initcall(cpu_boost_init);
+module_exit(cpu_boost_exit);
