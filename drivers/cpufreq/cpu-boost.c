@@ -55,7 +55,8 @@ static u64 last_input_time;
 
 static void do_input_boost_rem(struct work_struct *work)
 {
-	queue_work(cpu_boost_wq, &cooldown_boost_work);
+	if (cooldown_stune_boost)
+		queue_work(cpu_boost_wq, &cooldown_boost_work);
 
 	if (input_stune_boost_active)
 		input_stune_boost_active = reset_stune_boost("top-app",
@@ -86,9 +87,6 @@ static void do_cooldown_boost_rem(struct work_struct *work)
 
 static void do_cooldown_boost(struct work_struct *work)
 {
-	if (!cooldown_stune_boost)
-		return;
-
 	if (!cancel_delayed_work_sync(&cooldown_boost_rem)) {
 		if (!cooldown_stune_boost_active)
 			cooldown_stune_boost_active = !do_stune_boost("top-app",
