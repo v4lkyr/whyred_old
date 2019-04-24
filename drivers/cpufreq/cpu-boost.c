@@ -65,9 +65,6 @@ static void do_input_boost_rem(struct work_struct *work)
 
 static void do_input_boost(struct work_struct *work)
 {
-	if (!input_stune_boost)
-		return;
-
 	if (!cancel_delayed_work_sync(&input_boost_rem)) {
 		if (!input_stune_boost_active)
 			input_stune_boost_active = !do_stune_boost("top-app",
@@ -126,7 +123,8 @@ static void cpuboost_input_event(struct input_handle *handle,
 	if (work_pending(&input_boost_work))
 		return;
 
-	queue_work(cpu_boost_wq, &input_boost_work);
+	if (input_stune_boost)
+		queue_work(cpu_boost_wq, &input_boost_work);
 	last_input_time = ktime_to_us(ktime_get());
 }
 
