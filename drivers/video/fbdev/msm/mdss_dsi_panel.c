@@ -43,8 +43,8 @@ char g_lcd_id[128];
 bool ESD_TE_status = false;
 DEFINE_LED_TRIGGER(bl_led_trigger);
 
-static unsigned int bl_level_soft_limit = 16;
-module_param(bl_level_soft_limit, uint, 0644);
+static unsigned short bl_level_soft_limit = 16;
+module_param(bl_level_soft_limit, ushort, 0644);
 
 void mdss_dsi_panel_pwm_cfg(struct mdss_dsi_ctrl_pdata *ctrl)
 {
