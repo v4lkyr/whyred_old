@@ -187,7 +187,7 @@ void nf_logger_put(int pf, enum nf_log_type type)
 	rcu_read_unlock();
 }
 EXPORT_SYMBOL_GPL(nf_logger_put);
-
+/*
 void nf_log_packet(struct net *net,
 		   u_int8_t pf,
 		   unsigned int hooknum,
@@ -216,7 +216,7 @@ void nf_log_packet(struct net *net,
 	rcu_read_unlock();
 }
 EXPORT_SYMBOL(nf_log_packet);
-
+*/
 void nf_log_trace(struct net *net,
 		  u_int8_t pf,
 		  unsigned int hooknum,
@@ -537,8 +537,8 @@ static struct pernet_operations nf_log_net_ops = {
 	.init = nf_log_net_init,
 	.exit = nf_log_net_exit,
 };
-
+/*
 int __init netfilter_log_init(void)
 {
 	return register_pernet_subsys(&nf_log_net_ops);
-}
+}*/
