@@ -1,4 +1,5 @@
 /* Copyright (c) 2012-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2019 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -3648,7 +3649,6 @@ static int __response_handler(struct venus_hfi_device *device)
 					"Too many packets in message queue to handle at once, deferring read\n");
 			break;
 		}
-
 		/* do not read packets after sys error packet */
 		if (info->response_type == HAL_SYS_ERROR)
 			break;
@@ -3713,7 +3713,8 @@ err_no_work:
 	for (i = 0; !IS_ERR_OR_NULL(device->response_pkt) &&
 		i < num_responses; ++i) {
 		struct msm_vidc_cb_info *r = &device->response_pkt[i];
-		 if (!__core_in_valid_state(device)) {
+
+		if (!__core_in_valid_state(device)) {
 			dprintk(VIDC_ERR,
 				"Ignore responses from %d to %d as device is in invalid state",
 				(i + 1), num_responses);
