@@ -62,10 +62,12 @@ enum flat_binder_object_flags {
 	 * For SCHED_FIFO/SCHED_RR, the value can run between [1..99]
 	 */
 	FLAT_BINDER_FLAG_PRIORITY_MASK = 0xff,
+	
 	/**
 	 * @FLAT_BINDER_FLAG_ACCEPTS_FDS: whether the node accepts fds.
 	 */
 	FLAT_BINDER_FLAG_ACCEPTS_FDS = 0x100,
+
 	/**
 	 * @FLAT_BINDER_FLAG_SCHED_POLICY_MASK: bit-mask for scheduling policy
 	 *
