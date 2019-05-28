@@ -1821,7 +1821,12 @@ static irqreturn_t synaptics_rmi4_irq(int irq, void *data)
 	if (gpio_get_value(bdata->irq_gpio) != bdata->irq_on_state)
 		goto exit;
 
+	/* prevent CPU from entering deep sleep */
+	pm_qos_update_request(&rmi4_data->pm_touch_req, 100);
+	pm_qos_update_request(&rmi4_data->pm_i2c_req, 100);
 	synaptics_rmi4_sensor_report(rmi4_data, true);
+	pm_qos_update_request(&rmi4_data->pm_i2c_req, PM_QOS_DEFAULT_VALUE);
+	pm_qos_update_request(&rmi4_data->pm_touch_req, PM_QOS_DEFAULT_VALUE);
 
 exit:
 	return IRQ_HANDLED;
@@ -4229,6 +4234,7 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 
 	const struct synaptics_dsx_hw_interface *hw_if;
 	const struct synaptics_dsx_board_data *bdata;
+	unsigned int i2c_irq;
 
 	hw_if = pdev->dev.platform_data;
 	if (!hw_if) {
