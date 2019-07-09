@@ -126,8 +126,10 @@ static int update_config(struct clk_rcg2 *rcg, u32 cfg)
 {
 	int count, ret;
 	u32 cmd;
+#ifdef CONFIG_DEBUG_FS
 	struct clk_hw *hw = &rcg->clkr.hw;
 	const char *name = clk_hw_get_name(hw);
+#endif
 
 	ret = regmap_update_bits(rcg->clkr.regmap, rcg->cmd_rcgr + CMD_REG,
 				 CMD_UPDATE, CMD_UPDATE);
@@ -145,10 +147,10 @@ static int update_config(struct clk_rcg2 *rcg, u32 cfg)
 	}
 
 	pr_err("CFG_RCGR old frequency configuration 0x%x !\n", cfg);
-
+#ifdef CONFIG_DEBUG_FS
 	WARN_CLK(hw->core, name, count == 0,
 			"rcg didn't update its configuration.");
-
+#endif
 	return 0;
 }
 

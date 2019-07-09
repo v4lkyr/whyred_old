@@ -79,8 +79,10 @@ static int clk_branch_wait(const struct clk_branch *br, bool enabling,
 		bool (check_halt)(const struct clk_branch *, bool))
 {
 	bool voted = br->halt_check & BRANCH_VOTED;
+#ifdef CONFIG_DEBUG_FS
 	const struct clk_hw *hw = &br->clkr.hw;
 	const char *name = clk_hw_get_name(hw);
+#endif
 
 	/* Skip checking halt bit if the clock is in hardware gated mode */
 	if (clk_branch_in_hwcg_mode(br))
@@ -107,10 +109,10 @@ static int clk_branch_wait(const struct clk_branch *br, bool enabling,
 				return 0;
 			udelay(1);
 		}
-
+#ifdef CONFIG_DEBUG_FS
 		WARN_CLK(hw->core, name, 1, "status stuck at 'o%s'",
 						enabling ? "ff" : "n");
-
+#endif
 		return -EBUSY;
 	}
 	return 0;

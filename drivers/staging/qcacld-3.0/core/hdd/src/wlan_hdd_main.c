@@ -6536,11 +6536,11 @@ void hdd_unregister_notifiers(hdd_context_t *hdd_ctx)
  */
 static void hdd_exit_netlink_services(hdd_context_t *hdd_ctx)
 {
-	spectral_scan_deactivate_service();
-	cnss_diag_deactivate_service();
+	/*spectral_scan_deactivate_service();
+	cnss_diag_deactivate_service();*/
 	hdd_close_cesium_nl_sock();
 	ptt_sock_deactivate_svc();
-	oem_deactivate_service();
+	/*oem_deactivate_service();*/
 	nl_srv_exit();
 }
 
@@ -6585,13 +6585,13 @@ static int hdd_init_netlink_services(hdd_context_t *hdd_ctx)
 	ret = spectral_scan_activate_service();
 	if (ret) {
 		hdd_alert("spectral_scan_activate_service failed: %d", ret);
-		goto err_cnss_diag;
+		goto err_close_cesium;
 	}
 
 	return 0;
 
-err_cnss_diag:
-	cnss_diag_deactivate_service();
+/*err_cnss_diag:
+	cnss_diag_deactivate_service();*/
 err_close_cesium:
 	hdd_close_cesium_nl_sock();
 	ptt_sock_deactivate_svc();

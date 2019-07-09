@@ -234,16 +234,6 @@ static inline int cnss_diag_activate_service(void)
 }
 #endif /* WLAN_DEBUG */
 
-/**
- * cnss_diag_deactivate_service() - API to deregister CNSS diag cmd handler
- *
- * API to deregister the handler for the NL message received from cnss_diag
- * application.
- *
- * Return: 0
- */
-int cnss_diag_deactivate_service(void);
-
 #ifdef __cplusplus
 }
 #endif
