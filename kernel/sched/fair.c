@@ -6973,7 +6973,6 @@ static inline int find_best_target(struct task_struct *p, int *backup_cpu,
 			unsigned long capacity_curr = capacity_curr_of(i);
 			unsigned long capacity_orig = capacity_orig_of(i);
 			unsigned long wake_util, new_util, min_capped_util;
-			long spare_cap;
 			int idle_idx = INT_MAX;
 			long spare_cap;
 
