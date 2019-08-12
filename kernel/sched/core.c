@@ -2479,7 +2479,9 @@ int sysctl_numa_balancing(struct ctl_table *table, int write,
 int sched_fork(unsigned long clone_flags, struct task_struct *p)
 {
 	unsigned long flags;
-	int cpu = get_cpu();
+	int cpu;
+
+	cpu = get_cpu();
 
 	__sched_fork(clone_flags, p);
 	/*
