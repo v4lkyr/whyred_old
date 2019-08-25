@@ -196,5 +196,6 @@
 		qcom,mdss-dsi-panel-max-error-count = <3>;
 		qcom,ulps-enabled;
 		qcom,suspend-ulps-enabled;
+		qcom,panel-ack-disabled;
 	};
 };
