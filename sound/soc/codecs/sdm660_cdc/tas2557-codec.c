@@ -106,8 +106,12 @@ static int tas2557_codec_resume(struct snd_soc_codec *pCodec)
 
 	mutex_lock(&pTAS2557->codec_lock);
 
-	dev_dbg(pTAS2557->dev, "%s\n", __func__);
-	pTAS2557->runtime_resume(pTAS2557);
+	if (pTAS2557->runtime_resume(pTAS2557)) {
+		dev_dbg(pTAS2557->dev, "%s\n", __func__);
+		ret = pTAS2557->runtime_resume(pTAS2557);
+	} else {
+		ret = 0;
+	}
 
 	mutex_unlock(&pTAS2557->codec_lock);
 	return ret;
