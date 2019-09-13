@@ -81,6 +81,7 @@ static int sdcardfs_create(struct inode *dir, struct dentry *dentry,
 					SDCARDFS_I(dir)->data);
 	if (!saved_cred)
 		return -ENOMEM;
+
 	sdcardfs_get_lower_path(dentry, &lower_path);
 	lower_dentry = lower_path.dentry;
 	lower_dentry_mnt = lower_path.mnt;
@@ -146,6 +147,7 @@ static int sdcardfs_unlink(struct inode *dir, struct dentry *dentry)
 						SDCARDFS_I(dir)->data);
 	if (!saved_cred)
 		return -ENOMEM;
+
 	sdcardfs_get_lower_path(dentry, &lower_path);
 	lower_dentry = lower_path.dentry;
 	lower_mnt = lower_path.mnt;

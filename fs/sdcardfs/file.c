@@ -253,6 +253,7 @@ static int sdcardfs_open(struct inode *inode, struct file *file)
 		err = -ENOMEM;
 		goto out_err;
 	}
+
 	file->private_data =
 		kzalloc(sizeof(struct sdcardfs_file_info), GFP_KERNEL);
 	if (!SDCARDFS_F(file)) {
