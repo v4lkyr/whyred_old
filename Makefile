@@ -395,6 +395,15 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
 
+ifneq ($(cc-name),clang)
+KBUILD_CFLAGS    += -march=armv8-a+crc+crypto -mtune=cortex-a73.cortex-a53 \
+		    -fgraphite -fgraphite-identity -ftree-vectorize \
+		    -ffast-math -floop-nest-optimize -floop-parallelize-all \
+		    -ftree-loop-distribution
+else
+KBUILD_CFLAGS    += -march=armv8-a+crc+crypto
+endif
+
 ifeq ($(TARGET_BOARD_TYPE),auto)
 KBUILD_CFLAGS    += -DCONFIG_PLATFORM_AUTO
 endif
