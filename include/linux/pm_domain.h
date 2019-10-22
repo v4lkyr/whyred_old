@@ -86,6 +86,7 @@ struct gpd_timing_data {
 	s64 effective_constraint_ns;
 	bool constraint_changed;
 	bool cached_stop_ok;
+	bool cached_suspend_ok;
 };
 
 struct pm_domain_data {
