@@ -2241,7 +2241,7 @@ static ssize_t name##_show(struct device *_dev,				\
 	return scnprintf(buf, PAGE_SIZE, "0x%x\n",			\
 			 readl_relaxed(drvdata->base + offset));	\
 }									\
-static DEVICE_ATTR_RO(name)
+DEVICE_ATTR_RO(name)
 
 coresight_cross_read(trcoslsr, TRCOSLSR);
 coresight_cross_read(trcpdcr, TRCPDCR);
