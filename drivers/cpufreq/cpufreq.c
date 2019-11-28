@@ -1046,6 +1046,9 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 	struct freq_attr *fattr = to_attr(attr);
 	ssize_t ret;
 
+	if (!fattr->show)
+		return -EIO;
+
 	down_read(&policy->rwsem);
 
 	if (fattr->show)
@@ -1064,6 +1067,9 @@ static ssize_t store(struct kobject *kobj, struct attribute *attr,
 	struct cpufreq_policy *policy = to_policy(kobj);
 	struct freq_attr *fattr = to_attr(attr);
 	ssize_t ret = -EINVAL;
+
+	if (!fattr->store)
+		return -EIO;
 
 	get_online_cpus();
 
@@ -1871,6 +1877,9 @@ void cpufreq_resume(void)
 	int ret;
 
 	if (!cpufreq_driver)
+		return;
+
+	if (unlikely(!cpufreq_suspended))
 		return;
 
 	cpufreq_suspended = false;
