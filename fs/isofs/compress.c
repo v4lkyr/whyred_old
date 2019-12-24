@@ -22,6 +22,8 @@
 #include <linux/vmalloc.h>
 #include <linux/zlib.h>
 
+#include <linux/slab.h>
+
 #include "isofs.h"
 #include "zisofs.h"
 
@@ -58,7 +60,7 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
 				>> bufshift;
 	int haveblocks;
 	blkcnt_t blocknum;
-	struct buffer_head *bhs[needblocks + 1];
+	struct buffer_head **bhs;
 	int curbh, curpage;
 
 	if (block_size > deflateBound(1UL << zisofs_block_shift)) {
@@ -79,7 +81,11 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
 
 	/* Because zlib is not thread-safe, do all the I/O at the top. */
 	blocknum = block_start >> bufshift;
-	memset(bhs, 0, (needblocks + 1) * sizeof(struct buffer_head *));
+	bhs = kcalloc(needblocks + 1, sizeof(*bhs), GFP_KERNEL);
+	if (!bhs) {
+		*errp = -ENOMEM;
+		return 0;
+	}
 	haveblocks = isofs_get_blocks(inode, blocknum, bhs, needblocks);
 	ll_rw_block(READ, haveblocks, bhs);
 
@@ -189,6 +195,7 @@ z_eio:
 b_eio:
 	for (i = 0; i < haveblocks; i++)
 		brelse(bhs[i]);
+	kfree(bhs);
 	return stream.total_out;
 }
 
@@ -304,7 +311,7 @@ static int zisofs_readpage(struct file *file, struct page *page)
 	unsigned int zisofs_pages_per_cblock =
 		PAGE_CACHE_SHIFT <= zisofs_block_shift ?
 		(1 << (zisofs_block_shift - PAGE_CACHE_SHIFT)) : 0;
-	struct page *pages[max_t(unsigned, zisofs_pages_per_cblock, 1)];
+	struct page **pages;
 	pgoff_t index = page->index, end_index;
 
 	end_index = (inode->i_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
@@ -328,6 +335,12 @@ static int zisofs_readpage(struct file *file, struct page *page)
 	} else {
 		full_page = 0;
 		pcount = 1;
+	}
+	pages = kcalloc(max_t(unsigned int, zisofs_pages_per_cblock, 1),
+					sizeof(*pages), GFP_KERNEL);
+	if (!pages) {
+		unlock_page(page);
+		return -ENOMEM;
 	}
 	pages[full_page] = page;
 
@@ -356,6 +369,7 @@ static int zisofs_readpage(struct file *file, struct page *page)
 	}			
 
 	/* At this point, err contains 0 or -EIO depending on the "critical" page */
+	kfree(pages);
 	return err;
 }
 
