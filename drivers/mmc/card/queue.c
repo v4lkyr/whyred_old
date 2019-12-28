@@ -119,8 +119,6 @@ static int mmc_cmdq_thread(void *d)
 	struct mmc_host *host = card->host;
 
 	current->flags |= PF_MEMALLOC;
-	if (card->host->wakeup_on_idle)
-		set_wake_up_idle(true);
 
 	while (1) {
 		int ret = 0;
@@ -145,7 +143,6 @@ static int mmc_queue_thread(void *d)
 {
 	struct mmc_queue *mq = d;
 	struct request_queue *q = mq->queue;
-	struct mmc_card *card = mq->card;
 	struct sched_param scheduler_params = {0};
 
 	scheduler_params.sched_priority = 1;
@@ -153,8 +150,6 @@ static int mmc_queue_thread(void *d)
 	sched_setscheduler(current, SCHED_FIFO, &scheduler_params);
 
 	current->flags |= PF_MEMALLOC;
-	if (card->host->wakeup_on_idle)
-		set_wake_up_idle(true);
 
 	down(&mq->thread_sem);
 	do {

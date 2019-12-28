@@ -5508,46 +5508,11 @@ int hdd_ipa_set_perf_level(hdd_context_t *hdd_ctx, uint64_t tx_packets,
 }
 
 #ifdef QCA_CONFIG_SMP
-/**
- * hdd_ipa_get_wake_up_idle() - Get PF_WAKE_UP_IDLE flag in the task structure
- *
- * Get PF_WAKE_UP_IDLE flag in the task structure
- *
- * Return: 1 if PF_WAKE_UP_IDLE flag is set, 0 otherwise
- */
-static uint32_t hdd_ipa_get_wake_up_idle(void)
-{
-	return sched_get_wake_up_idle(current);
-}
-
-/**
- * hdd_ipa_set_wake_up_idle() - Set PF_WAKE_UP_IDLE flag in the task structure
- *
- * Set PF_WAKE_UP_IDLE flag in the task structure
- * This task and any task woken by this will be waken to idle CPU
- *
- * Return: None
- */
-static void hdd_ipa_set_wake_up_idle(bool wake_up_idle)
-{
-	sched_set_wake_up_idle(current, wake_up_idle);
-
-}
-
 static int hdd_ipa_aggregated_rx_ind(qdf_nbuf_t skb)
 {
 	return netif_rx_ni(skb);
 }
 #else /* QCA_CONFIG_SMP */
-static uint32_t hdd_ipa_get_wake_up_idle(void)
-{
-	return 0;
-}
-
-static void hdd_ipa_set_wake_up_idle(bool wake_up_idle)
-{
-}
-
 static int hdd_ipa_aggregated_rx_ind(qdf_nbuf_t skb)
 {
 	struct iphdr *ip_h;
@@ -5592,7 +5557,6 @@ static void hdd_ipa_send_skb_to_network(qdf_nbuf_t skb,
 	int result;
 	struct hdd_ipa_priv *hdd_ipa = ghdd_ipa;
 	unsigned int cpu_index;
-	uint32_t enabled;
 	struct qdf_mac_addr src_mac;
 	uint8_t staid;
 
@@ -5609,14 +5573,6 @@ static void hdd_ipa_send_skb_to_network(qdf_nbuf_t skb,
 		kfree_skb(skb);
 		return;
 	}
-
-	/*
-	 * Set PF_WAKE_UP_IDLE flag in the task structure
-	 * This task and any task woken by this will be waken to idle CPU
-	 */
-	enabled = hdd_ipa_get_wake_up_idle();
-	if (!enabled)
-		hdd_ipa_set_wake_up_idle(true);
 
 	if ((adapter->device_mode == QDF_SAP_MODE) &&
 	     (qdf_nbuf_is_ipv4_dhcp_pkt(skb) == true)) {
@@ -5653,12 +5609,6 @@ static void hdd_ipa_send_skb_to_network(qdf_nbuf_t skb,
 		++adapter->hdd_stats.hddTxRxStats.rxRefused[cpu_index];
 
 	hdd_ipa->ipa_rx_net_send_count++;
-
-	/*
-	 * Restore PF_WAKE_UP_IDLE flag in the task structure
-	 */
-	if (!enabled)
-		hdd_ipa_set_wake_up_idle(false);
 }
 
 /**
