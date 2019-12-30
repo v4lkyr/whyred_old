@@ -218,10 +218,18 @@ dtbo-$(CONFIG_ARCH_SDM660) += \
 
 
 else
-dtb-$(CONFIG_ARCH_SDM660) += sdm636-mtp_e7t.dtb \
-	sdm636-mtp_e7s.dtb \
-	sdm660-mtp_wayne.dtb \
-	sdm660-mtp.dtb 
+ifeq ($(CONFIG_ARCH_SDM660),y)
+dtb-y += sdm660-mtp.dtb
+ifeq ($(CONFIG_KERNEL_CUSTOM_E7T),y)
+dtb-y += sdm636-mtp_e7t.dtb
+endif
+ifeq ($(CONFIG_KERNEL_CUSTOM_E7S),y)
+dtb-y += sdm636-mtp_e7s.dtb
+endif
+ifeq ($(CONFIG_KERNEL_CUSTOM_D2S),y)
+dtb-y += sdm660-mtp_wayne.dtb
+endif
+endif
 endif
 
 dtb-$(CONFIG_ARCH_SDM630) += sdm630-rumi.dtb \
