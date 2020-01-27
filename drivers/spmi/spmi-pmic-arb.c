@@ -568,22 +568,13 @@ static void periph_interrupt(struct spmi_pmic_arb *pa, u16 apid, bool show)
 
 			pr_warn("spmi_show_resume_irq: %d triggered [0x%01x, 0x%02x, 0x%01x] %s\n",
 				irq, sid, per, id, name);
-
-			/*Add-begin-HMI_M6100_A01-60
-			**Comment:Logging kernel wakeup reson
-			*/
-
-			log_wakeup_reason(irq);
-
-			/*Add-end HMI_M6100_A01-60*/
-
 		} else {
 			generic_handle_irq(irq);
 		}
 	}
 }
 
-static void __pmic_arb_chained_irq(struct spmi_pmic_arb *pa, bool show)
+static bool __pmic_arb_chained_irq(struct spmi_pmic_arb *pa, bool show)
 {
 	int first = pa->min_apid >> 5;
 	int last = pa->max_apid >> 5;
@@ -636,16 +627,19 @@ static void __pmic_arb_chained_irq(struct spmi_pmic_arb *pa, bool show)
 			}
 		}
 	}
+	return true;
 }
 
-static void pmic_arb_chained_irq(struct irq_desc *desc)
+static bool pmic_arb_chained_irq(struct irq_desc *desc)
 {
 	struct spmi_pmic_arb *pa = irq_desc_get_handler_data(desc);
 	struct irq_chip *chip = irq_desc_get_chip(desc);
+	bool ret;
 
 	chained_irq_enter(chip, desc);
-	__pmic_arb_chained_irq(pa, false);
+	ret = __pmic_arb_chained_irq(pa, false);
 	chained_irq_exit(chip, desc);
+	return ret;
 }
 
 static void qpnpint_irq_ack(struct irq_data *d)
