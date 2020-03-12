@@ -295,6 +295,8 @@ int dfs_control(struct wlan_dfs *dfs,
 		goto bad;
 	}
 
+	qdf_mem_zero(&peout, sizeof(peout));
+
 	switch (id) {
 	case DFS_SET_THRESH:
 		if (insize < sizeof(struct dfs_ioctl_params) || !indata) {
