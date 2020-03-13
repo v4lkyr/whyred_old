@@ -2043,7 +2043,6 @@ static void proc_get_req(tpAniSirGlobal pMac, uint16_t length, uint32_t *pParam)
 				length -= sizeof(uint32_t);
 			}
 		}
-
 } /*** end procGetReq() ***/
 
 /**---------------------------------------------------------------------
