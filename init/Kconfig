@@ -1357,13 +1357,37 @@ config SCHED_TUNE
 	  If unsure, say N.
 
 config CPUSETS_ASSIST
-	bool "Cpuset configuration helper"
+	bool "CPUset configuration helper"
 	depends on CPUSETS
 	depends on ANDROID
 	help
 	  This option enables in-kernel overrides for cpuset values.
 
 	  If unsure, say N.
+
+if CPUSETS_ASSIST
+config AUDIO_APP
+	string "Input CPUsets for audio-app"
+	default "0-3"
+config BACKGROUND
+	string "Input CPUsets for background"
+	default "0-3"
+config CAMERA_DAEMON
+	string "Input CPUsets for camera-daemon"
+	default "4-7"
+config FOREGROUND
+	string "Input CPUsets for foreground"
+	default "0-7"
+config RESTRICTED
+	string "Input CPUsets for restricted"
+	default "0-7"
+config SYSTEM_BACKGROUND
+	string "Input CPUsets for system-background"
+	default "0-3"
+config TOP_APP
+	string "Input CPUsets for top-app"
+	default "0-7"
+endif
 
 config DEFAULT_USE_ENERGY_AWARE
 	bool "Default to enabling the Energy Aware Scheduler feature"
