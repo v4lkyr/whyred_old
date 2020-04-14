@@ -2773,10 +2773,7 @@ static struct snd_soc_dai_link msm_int_be_dai[] = {
 		.ignore_suspend = 1,
 	},
 };
-
-
 #if defined(CONFIG_SND_SOC_TAS2557) && defined(CONFIG_SND_SOC_TFA98XX)
-
 static struct snd_soc_dai_link msm_mi2s_be_dai_links_ti[] = {
 	{
 		.name = LPASS_BE_PRI_MI2S_RX,
@@ -2785,7 +2782,7 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links_ti[] = {
 		.platform_name = "msm-pcm-routing",
 	#ifdef CONFIG_SND_SOC_TAS2557
 		.codec_name = "tas2557.6-004c",
-		.codec_dai_name = "tas2557 ASI1",
+		.codec_dai_name = "tas2557 ASI2",
 	#else
 		.codec_name = "msm-stub-codec.1",
 		.codec_dai_name = "msm-stub-rx",
@@ -3154,7 +3151,7 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 		.platform_name = "msm-pcm-routing",
 	#if defined(CONFIG_SND_SOC_TAS2557)
 		.codec_name = "tas2557.6-004c",
-		.codec_dai_name = "tas2557 ASI1",
+		.codec_dai_name = "tas2557 ASI2",
 	#elif defined(CONFIG_SND_SOC_TFA98XX)
 		.codec_name = "tfa98xx.6-0034",
 		.codec_dai_name = "tfa98xx-aif",
@@ -3286,7 +3283,6 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 		.ignore_suspend = 1,
 	},
 };
-
 #endif
 static struct snd_soc_dai_link msm_auxpcm_be_dai_links[] = {
 	/* Primary AUX PCM Backend DAI Links */
