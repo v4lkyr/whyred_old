@@ -53,7 +53,7 @@
 #define QPNP_HAP_EXT_PWM_REG(b)		(b + 0x57)
 #define QPNP_HAP_PWM_CAP_REG(b)		(b + 0x58)
 #define QPNP_HAP_SC_CLR_REG(b)		(b + 0x59)
-#define QPNP_HAP_SC_IRQ_STATUS_DELAY   msecs_to_jiffies(1000)
+#define QPNP_HAP_SC_IRQ_STATUS_DELAY	msecs_to_jiffies(1000)
 #define QPNP_HAP_BRAKE_REG(b)		(b + 0x5C)
 #define QPNP_HAP_WAV_REP_REG(b)		(b + 0x5E)
 #define QPNP_HAP_WAV_S_REG_BASE(b)	(b + 0x60)
@@ -567,14 +567,14 @@ static int qpnp_hap_mod_enable(struct qpnp_hap *hap, bool on)
 				break;
 			}
 		}
-		pr_info("zjl %s  11 val == %d\n", __func__, val);
+		pr_debug("zjl %s  11 val == %d\n", __func__, val);
 		if (i >= QPNP_HAP_MAX_RETRIES)
 			pr_debug("Haptics Busy. Force disable\n");
 	}
 
 	val = on ? QPNP_HAP_EN_BIT : 0;
 	rc = qpnp_hap_write_reg(hap, QPNP_HAP_EN_CTL_REG(hap->base), val);
-	pr_info("zjl %s  end val == %d\n", __func__, val);
+	pr_debug("zjl %s  end val == %d\n", __func__, val);
 	if (rc < 0)
 		return rc;
 
@@ -2279,51 +2279,35 @@ static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 #ifdef CONFIG_KERNEL_CUSTOM_E7T
 	vmax_mv = hap->vmax_mv;
 	qpnp_hap_vmax_config(hap, vmax_mv, false);
-#else
-
-#ifdef CONFIG_KERNEL_CUSTOM_F7A
-
-    pr_info("zjl hasfasda F7A haptic  =%d\n",time_ms);
-
- 	vmax_mv = hap->vmax_mv;
+#elif defined (CONFIG_KERNEL_CUSTOM_F7A)
+	pr_debug("zjl hasfasda F7A haptic =%d\n", time_ms);
+	vmax_mv = hap->vmax_mv;
 	qpnp_hap_vmax_config(hap, vmax_mv, false);
-#else
-
-#ifdef CONFIG_KERNEL_CUSTOM_E7S
-
-    pr_info("zjl hasfasda E7S haptic  =%d\n",time_ms);
-
- 	vmax_mv = hap->vmax_mv;
+#elif defined (CONFIG_KERNEL_CUSTOM_E7S)
+	pr_debug("zjl hasfasda E7S haptic =%d\n", time_ms);
+	vmax_mv = hap->vmax_mv;
 	qpnp_hap_vmax_config(hap, vmax_mv, false);
-#else
-#ifdef CONFIG_KERNEL_CUSTOM_D2S
- pr_info("zjl hasfasda D2S haptic  =%d\n",time_ms);
-    if ((time_ms >= 30)||(time_ms != 11)||(time_ms != 15)||(time_ms != 20))
-	{
-	vmax_mv = 2204;
-	qpnp_hap_vmax_config(hap, vmax_mv, false);
-	hap->play_mode = QPNP_HAP_DIRECT;
-    }
-	else
-	{
-	hap->play_mode = QPNP_HAP_BUFFER;
-	qpnp_hap_parse_buffer_dt(hap);
-	    if (time_ms == 20)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp_three, true);
-		}else if(time_ms == 15)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp_two, true);
-		}else if(time_ms == 11)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp, true);
+#elif defined (CONFIG_KERNEL_CUSTOM_D2S)
+	pr_debug("zjl hasfasda D2S haptic =%d\n", time_ms);
+	if ((time_ms >= 30) || (time_ms != 11) || (time_ms != 15)
+		|| (time_ms != 20)) {
+		vmax_mv = 2204;
+		qpnp_hap_vmax_config(hap, vmax_mv, false);
+		hap->play_mode = QPNP_HAP_DIRECT;
+	} else {
+		hap->play_mode = QPNP_HAP_BUFFER;
+		qpnp_hap_parse_buffer_dt(hap);
+		if (time_ms == 20) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp_three, true);
+		} else if (time_ms == 15) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp_two, true);
+		} else if (time_ms == 11) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp, true);
 		}
-
-	vmax_mv = 2204;
-	qpnp_hap_vmax_config(hap, vmax_mv, false);
-
-	hap->play_mode = QPNP_HAP_BUFFER;
-	hap->wave_shape = QPNP_HAP_WAV_SQUARE;
+		vmax_mv = 2204;
+		qpnp_hap_vmax_config(hap, vmax_mv, false);
+		hap->play_mode = QPNP_HAP_BUFFER;
+		hap->wave_shape = QPNP_HAP_WAV_SQUARE;
 	}
 	qpnp_hap_mod_enable(hap, false);
 	qpnp_hap_play_mode_config(hap);
@@ -2331,45 +2315,35 @@ static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 	if (is_sw_lra_auto_resonance_control(hap))
 		hrtimer_cancel(&hap->auto_res_err_poll_timer);
 #else
-    if ((time_ms >= 30)||(time_ms != 11)||(time_ms != 15)||(time_ms != 20))
-	{
-	vmax_mv = 2204;
-	qpnp_hap_vmax_config(hap, vmax_mv, false);
-	hap->play_mode = QPNP_HAP_DIRECT;
-    }
-	else
-	{
-	hap->play_mode = QPNP_HAP_BUFFER;
-	qpnp_hap_parse_buffer_dt(hap);
-	    if (time_ms == 20)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp_three, true);
-		}else if(time_ms == 15)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp_two, true);
-		}else if(time_ms == 11)
-		{
-		qpnp_hap_buffer_config(hap, hap->wave_samp, true);
+	if ((time_ms >= 30) || (time_ms != 11) || (time_ms != 15)
+		|| (time_ms != 20)) {
+		vmax_mv = 2204;
+		qpnp_hap_vmax_config(hap, vmax_mv, false);
+		hap->play_mode = QPNP_HAP_DIRECT;
+	} else {
+		hap->play_mode = QPNP_HAP_BUFFER;
+		qpnp_hap_parse_buffer_dt(hap);
+		if (time_ms == 20) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp_three, true);
+		} else if (time_ms == 15) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp_two, true);
+		} else if (time_ms == 11) {
+			qpnp_hap_buffer_config(hap, hap->wave_samp, true);
 		}
 
-	vmax_mv = 2204;
-	qpnp_hap_vmax_config(hap, vmax_mv, false);
-
-	hap->play_mode = QPNP_HAP_BUFFER;
-	hap->wave_shape = QPNP_HAP_WAV_SQUARE;
+		vmax_mv = 2204;
+		qpnp_hap_vmax_config(hap, vmax_mv, false);
+		hap->play_mode = QPNP_HAP_BUFFER;
+		hap->wave_shape = QPNP_HAP_WAV_SQUARE;
 	}
 	qpnp_hap_mod_enable(hap, false);
 	qpnp_hap_play_mode_config(hap);
-    pr_info("zjl jjjjjj   haptic  =%d\n",time_ms);
+	pr_debug("zjl jjjjjj   haptic  =%d\n", time_ms);
+
 	if (is_sw_lra_auto_resonance_control(hap))
 		hrtimer_cancel(&hap->auto_res_err_poll_timer);
 #endif
-#endif
-#endif
-#endif
-
 	hrtimer_cancel(&hap->hap_timer);
-
 	if (hap->auto_mode) {
 		rc = qpnp_hap_auto_mode_config(hap, time_ms);
 		if (rc < 0) {
@@ -2378,11 +2352,10 @@ static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 			return;
 		}
 	}
-
 	time_ms = (time_ms > hap->timeout_ms ? hap->timeout_ms : time_ms);
 	hap->play_time_ms = time_ms;
 	hap->state = 1;
-	pr_info("zjl aaa  haptic  =%d\n",time_ms);
+	pr_debug("zjl aaa  haptic  =%d\n", time_ms);
 	hrtimer_start(&hap->hap_timer,
 		ktime_set(time_ms / 1000, (time_ms % 1000) * 1000000),
 		HRTIMER_MODE_REL);
@@ -2446,7 +2419,7 @@ int qpnp_hap_play_byte(u8 data, bool on)
 	pr_debug("data=0x%x duty_per=%d\n", data, duty_percent);
 
 	rc = qpnp_hap_set(hap, true);
-pr_info("%s  zjl f   asd  7 \n", __func__);    
+	pr_debug("%s  zjl f   asd  7 \n", __func__);    
 	return rc;
 }    
 EXPORT_SYMBOL(qpnp_hap_play_byte);
