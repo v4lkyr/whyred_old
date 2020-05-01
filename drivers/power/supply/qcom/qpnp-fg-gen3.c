@@ -654,7 +654,7 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 			BATT_INFO_BATT_TEMP_LSB(chip), rc);
 		return rc;
 	}
-		pr_err("addr=0x%04x,buf1=%04x buf0=%04x\n",
+		pr_debug("addr=0x%04x,buf1=%04x buf0=%04x\n",
 			BATT_INFO_BATT_TEMP_LSB(chip),buf[1],buf[0]);
 	temp = ((buf[1] & BATT_TEMP_MSB_MASK) << 8) |
 		(buf[0] & BATT_TEMP_LSB_MASK);
@@ -662,11 +662,11 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 
 	/* Value is in Kelvin; Convert it to deciDegC */
 	temp = (temp - 273) * 10;
-		pr_err("LCT TEMP=%d\n",temp);
+		pr_debug("LCT TEMP=%d\n",temp);
 
 #if defined(CONFIG_KERNEL_CUSTOM_E7T)	
-	if (temp < -40){
-		switch (temp){
+	if (temp < -40) {
+		switch (temp) {
 		case -50:
 			temp = -70;
 			break;
@@ -680,8 +680,8 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 			temp = -100;
 			break;
 #else
-	if (temp < -80){
-		switch (temp){
+	if (temp < -80) {
+		switch (temp) {
 #endif
 		case -90:
 			temp = -110;
@@ -714,7 +714,7 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 	}
 
 #if defined(CONFIG_KERNEL_CUSTOM_E7T)
-	if(rradc_die == 1){
+	if (rradc_die == 1) {
 		quiet_them = thermal_zone_get_zone_by_name("quiet_therm");
 		if (quiet_them)
 			rc = thermal_zone_get_temp(quiet_them, &temp);
@@ -843,26 +843,28 @@ static int fg_get_msoc(struct fg_chip *chip, int *msoc)
 		return rc;
 #if defined(CONFIG_KERNEL_CUSTOM_D2S) || defined(CONFIG_KERNEL_CUSTOM_F7A)
 	/*
-       * To have better endpoints for 0 and 100, it is good to tune the
-       * calculation discarding values 0 and 255 while rounding off. Rest
-       * of the values 1-254 will be scaled to 1-99. DIV_ROUND_UP will not
-       * be suitable here as it rounds up any value higher than 252 to 100.
-       */
-      if ((*msoc >= FULL_SOC_REPORT_THR - 2)
-                      && (*msoc < FULL_SOC_RAW) && chip->report_full) {
-              *msoc = DIV_ROUND_CLOSEST(*msoc * FULL_CAPACITY, FULL_SOC_RAW) + 1;
-              if (*msoc >= FULL_CAPACITY)
-                      *msoc = FULL_CAPACITY;
-      } else if (*msoc == FULL_SOC_RAW)
-              *msoc = 100;
-      else if (*msoc == 0)
-              *msoc = 0;
-      else if (*msoc >= FULL_SOC_REPORT_THR - 4 && *msoc <= FULL_SOC_REPORT_THR - 3 && chip->report_full) {
-              *msoc = DIV_ROUND_CLOSEST(*msoc * FULL_CAPACITY, FULL_SOC_RAW);
-      } else {
-              *msoc = DIV_ROUND_CLOSEST((*msoc - 1) * (FULL_CAPACITY - 2),
-                              FULL_SOC_RAW - 2) + 1;
-      }
+	* To have better endpoints for 0 and 100, it is good to tune the
+	* calculation discarding values 0 and 255 while rounding off. Rest
+	* of the values 1-254 will be scaled to 1-99. DIV_ROUND_UP will not
+	* be suitable here as it rounds up any value higher than 252 to 100.
+	*/
+	if ((*msoc >= FULL_SOC_REPORT_THR - 2)
+			&& (*msoc < FULL_SOC_RAW) && chip->report_full) {
+		*msoc = DIV_ROUND_CLOSEST(*msoc * FULL_CAPACITY, FULL_SOC_RAW) + 1;
+		if (*msoc >= FULL_CAPACITY)
+			*msoc = FULL_CAPACITY;
+	} else if (*msoc == FULL_SOC_RAW)
+		*msoc = 100;
+	else if (*msoc == 0)
+		*msoc = 0;
+	else if (*msoc >= FULL_SOC_REPORT_THR - 4
+			&& *msoc <= FULL_SOC_REPORT_THR - 3
+			&& chip->report_full) {
+		*msoc = DIV_ROUND_CLOSEST(*msoc * FULL_CAPACITY, FULL_SOC_RAW);
+	} else {
+		*msoc = DIV_ROUND_CLOSEST((*msoc - 1) * (FULL_CAPACITY - 2),
+		FULL_SOC_RAW - 2) + 1;
+	}
 #else
 	/*
 	 * To have better endpoints for 0 and 100, it is good to tune the
@@ -1084,6 +1086,7 @@ static int __init hwc_setup(char *s)
 		hwc_check_global = 1;
 	else
 		hwc_check_global = 0;
+
 	return 1;
 }
 
@@ -1126,25 +1129,24 @@ static int fg_get_batt_profile(struct fg_chip *chip)
 		chip->bp.float_volt_uv = -EINVAL;
 	}
 
-	if (hwc_check_global){
+	if (hwc_check_global) {
 		pr_err("sunxing get global set fastchg  2.3A");
 		chip->bp.fastchg_curr_ma = 2300;
-	}else{
-	rc = of_property_read_u32(profile_node, "qcom,fastchg-current-ma",
+	} else {
+		rc = of_property_read_u32(profile_node, "qcom,fastchg-current-ma",
 			&chip->bp.fastchg_curr_ma);
 #if defined(CONFIG_KERNEL_CUSTOM_E7T)
-	if (is_poweroff_charge == true)
-	{
-		if(hwc_check_india == 1)
-			chip->bp.fastchg_curr_ma = 2200;
-		else
-			chip->bp.fastchg_curr_ma = 2300;
-	}
+		if (is_poweroff_charge == true) {
+			if (hwc_check_india == 1)
+				chip->bp.fastchg_curr_ma = 2200;
+			else
+				chip->bp.fastchg_curr_ma = 2300;
+		}
 #endif
-	if (rc < 0) {
-		pr_err("battery fastchg current unavailable, rc:%d\n", rc);
-		chip->bp.fastchg_curr_ma = -EINVAL;
-	}
+		if (rc < 0) {
+			pr_err("battery fastchg current unavailable, rc:%d\n", rc);
+			chip->bp.fastchg_curr_ma = -EINVAL;
+		}
 	}
 	rc = of_property_read_u32(profile_node, "qcom,fg-cc-cv-threshold-mv",
 			&chip->bp.vbatt_full_mv);
@@ -1159,13 +1161,11 @@ static int fg_get_batt_profile(struct fg_chip *chip)
 		return -ENODATA;
 	}
 
-
 	rc = of_property_read_u32(profile_node, "qcom,battery-full-design", &chip->battery_full_design);
 	if (rc < 0) {
 		pr_err("No profile data available\n");
 		return -ENODATA;
 	}
-
 
 	if (len != PROFILE_LEN) {
 		pr_err("battery profile incorrect size: %d\n", len);

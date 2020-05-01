@@ -1029,9 +1029,9 @@ static enum power_supply_property smb2_batt_props[] = {
 
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 
-	#ifdef XIAOMI_CHARGER_RUNIN
+#ifdef XIAOMI_CHARGER_RUNIN
 	POWER_SUPPLY_PROP_CHARGING_ENABLED,
-	#endif
+#endif
 	POWER_SUPPLY_PROP_CHARGE_FULL,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
 };
@@ -1045,11 +1045,11 @@ static int smb2_batt_get_prop(struct power_supply *psy,
 	union power_supply_propval pval = {0, };
 
 	switch (psp) {
-	#ifdef XIAOMI_CHARGER_RUNIN
+#ifdef XIAOMI_CHARGER_RUNIN
 	case POWER_SUPPLY_PROP_CHARGING_ENABLED:
 		val->intval = chg->charging_enabled;
 		break;
-	#endif
+#endif
 	case POWER_SUPPLY_PROP_STATUS:
 		rc = smblib_get_prop_batt_status(chg, val);
 		break;
@@ -1067,12 +1067,12 @@ static int smb2_batt_get_prop(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		rc = smblib_get_prop_batt_capacity(chg, val);
-		#ifdef XIAOMI_CHARGER_RUNIN
-		pr_err("lct battery_capacity =%d\n", val->intval);
-		#endif
-		#ifdef CONFIG_CHARGER_RUNIN
+#ifdef XIAOMI_CHARGER_RUNIN
+		pr_debug("lct battery_capacity =%d\n", val->intval);
+#endif
+#ifdef CONFIG_CHARGER_RUNIN
 		runin_work(chg,val);
-		#endif
+#endif
 		break;
 	case POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL:
 		rc = smblib_get_prop_system_temp_level(chg, val);
