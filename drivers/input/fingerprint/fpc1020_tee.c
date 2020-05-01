@@ -193,11 +193,11 @@ static ssize_t fingerdown_wait_set(struct device *dev,
 	tyt_debug;
 	dev_dbg(fpc1020->dev, "%s\n", __func__);
 	if (!strncmp(buf, "enable", strlen("enable"))){
-		printk("wait_finger_down enable\n");
+		pr_debug("wait_finger_down enable\n");
 		fpc1020->wait_finger_down = true;
 	}
 	else if (!strncmp(buf, "disable", strlen("disable"))){
-		printk("wait_finger_down disable\n");
+		pr_debug("wait_finger_down disable\n");
 		fpc1020->wait_finger_down = false;
 	}
 	else
