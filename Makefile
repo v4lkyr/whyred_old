@@ -881,7 +881,7 @@ ifdef CONFIG_THINLTO
 lto-clang-flags	:= -flto=thin
 LDFLAGS		+= --fix-cortex-a53-843419 --fix-cortex-a53-835769 -O3
 else
-lto-clang-flags	:= -flto
+lto-clang-flags	:= -flto --param=max-inline-insns-auto=1000
 endif
 lto-clang-flags += -fvisibility=default $(call cc-option, -fsplit-lto-unit)
 
