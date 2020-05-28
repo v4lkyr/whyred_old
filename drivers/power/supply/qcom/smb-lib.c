@@ -905,6 +905,8 @@ static int smblib_get_pulse_cnt(struct smb_charger *chg, int *count)
 #define USBIN_150MA	150000
 #define USBIN_500MA	500000
 #define USBIN_900MA	900000
+#define USBIN_1800MA    1800000
+#define USBIN_2900MA    2900000
 
 static int set_sdp_current(struct smb_charger *chg, int icl_ua)
 {
@@ -913,9 +915,9 @@ static int set_sdp_current(struct smb_charger *chg, int icl_ua)
 	const struct apsd_result *apsd_result = smblib_get_apsd_result(chg);
 
 #ifdef CONFIG_FORCE_FAST_CHARGE
-	if (force_fast_charge > 0 && icl_ua == USBIN_500MA)
+	if (force_fast_charge > 0 && icl_ua == USBIN_1800MA)
 	{
-		icl_ua = USBIN_900MA;
+		icl_ua = USBIN_2900MA;
 	}
 #endif
 
@@ -2770,26 +2772,31 @@ int smblib_get_prop_die_health(struct smb_charger *chg,
 }
 
 #define SDP_CURRENT_UA			500000
+
 #ifdef CONFIG_KERNEL_CUSTOM_FACTORY
 #define CDP_CURRENT_UA			500000
 #else
 #define CDP_CURRENT_UA			1500000
 #endif
-#define DCP_CURRENT_UA			2000000
+
+#define DCP_CURRENT_UA			2500000
+
 #if defined(CONFIG_KERNEL_CUSTOM_D2S) || defined(CONFIG_KERNEL_CUSTOM_F7A)
-#define HVDCP2_CURRENT_UA		1500000
+#define HVDCP2_CURRENT_UA		2000000
 #else
-#define HVDCP2_CURRENT_UA		1500000
+#define HVDCP2_CURRENT_UA		2000000
 #endif
+
 #if defined(CONFIG_KERNEL_CUSTOM_D2S) || defined(CONFIG_KERNEL_CUSTOM_F7A)
 #define HVDCP_CURRENT_UA		2900000
 #elif defined(CONFIG_KERNEL_CUSTOM_E7S)
-#define HVDCP_CURRENT_UA		2000000
+#define HVDCP_CURRENT_UA		2900000
 #elif defined(CONFIG_KERNEL_CUSTOM_E7T)
-#define HVDCP_CURRENT_UA		2000000
+#define HVDCP_CURRENT_UA		2900000
 #else
 #define HVDCP_CURRENT_UA		2900000
 #endif
+
 #define TYPEC_DEFAULT_CURRENT_UA	900000
 #define TYPEC_MEDIUM_CURRENT_UA		1500000
 #define TYPEC_HIGH_CURRENT_UA		3000000
@@ -4051,7 +4058,7 @@ static void smblib_force_legacy_icl(struct smb_charger *chg, int pst)
 		break;
 	case POWER_SUPPLY_TYPE_USB_HVDCP:
 		#if defined(CONFIG_KERNEL_CUSTOM_E7S)
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 1500000);
+		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 2000000);
 		#elif defined(CONFIG_KERNEL_CUSTOM_E7T)
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 2000000);
 		#elif defined(CONFIG_KERNEL_CUSTOM_D2S) || defined(CONFIG_KERNEL_CUSTOM_F7A)
@@ -4063,7 +4070,7 @@ static void smblib_force_legacy_icl(struct smb_charger *chg, int pst)
 		break;
 	case POWER_SUPPLY_TYPE_USB_HVDCP_3:
 		#if defined (CONFIG_KERNEL_CUSTOM_E7S)
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 2000000);
+		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 2900000);
 		#elif defined(CONFIG_KERNEL_CUSTOM_E7T)
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 2000000);
 		#elif defined(CONFIG_KERNEL_CUSTOM_D2S) || defined(CONFIG_KERNEL_CUSTOM_F7A)
