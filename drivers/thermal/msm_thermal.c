@@ -2695,7 +2695,7 @@ int sensor_mgr_set_threshold(uint32_t zone_id,
 
 	ret = therm_get_temp(zone_id, THERM_ZONE_ID, &temp);
 	if (ret) {
-		pr_err("Unable to read temperature for zone:%d. err:%d\n",
+		pr_debug("Unable to read temperature for zone:%d. err:%d\n",
 			zone_id, ret);
 		goto set_threshold_exit;
 	}
