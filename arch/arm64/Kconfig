@@ -270,6 +270,21 @@ config MIUI_OLD_CAM
 	  This is old cam blobs.
 
 endchoice
+
+menu "CPU Freq table"
+config CPU_FREQ_MIN_PWRCLUSTER
+	int "LITTLE Cluster Minimum CPU Frequency"
+	default 633600
+config CPU_FREQ_MAX_PWRCLUSTER
+	int "LITTLE Cluster Maximum CPU Frequency"
+	default 1612800
+config CPU_FREQ_MIN_PERFCLUSTER
+	int "big Cluster Minimum CPU Frequency"
+	default 1113600
+config CPU_FREQ_MAX_PERFCLUSTER
+	int "big Cluster Maximum CPU Frequency"
+	default 1804800
+endmenu
 				
 config KERNEL_CUSTOM_FACTORY
     default n
