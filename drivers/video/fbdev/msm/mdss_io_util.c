@@ -18,7 +18,7 @@
 #include <linux/delay.h>
 #include <linux/mdss_io_util.h>
 
-extern bool enable_gesture_mode;
+static bool enable_gesture_mode;
 
 #ifdef CONFIG_KERNEL_CUSTOM_F7A
 extern bool synaptics_gesture_enable_flag;
