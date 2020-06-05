@@ -41,20 +41,14 @@ char g_lcd_id[128];
 struct mdss_dsi_ctrl_pdata *ctrl_pdata_whitepoint;
 EXPORT_SYMBOL(g_lcd_id);
 
+extern bool enable_gesture_mode;
+
 #ifdef CONFIG_KERNEL_CUSTOM_F7A
 #define TP_RESET_GPIO 66
-extern bool enable_gesture_mode;
 extern bool synaptics_gesture_enable_flag;
-#endif
-#ifdef CONFIG_KERNEL_DRIVER_D2S_CN
-extern bool enable_gesture_mode;
-#endif
-#ifdef CONFIG_KERNEL_CUSTOM_E7T
-extern bool enable_gesture_mode;
+#elif defined (CONFIG_KERNEL_CUSTOM_E7T)
 extern bool focal_gesture_mode;
-#endif
-#ifdef CONFIG_KERNEL_CUSTOM_E7S
-extern bool enable_gesture_mode;
+#elif defined (CONFIG_KERNEL_CUSTOM_E7S)
 extern bool synaptics_gesture_func_on;
 #endif
 
@@ -479,7 +473,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 		pr_err("%s: Invalid input data\n", __func__);
 		return -EINVAL;
 	}
-	printk("%s, panel reset, enable = %d\n", __func__, enable);
+	pr_debug("%s, panel reset, enable = %d\n", __func__, enable);
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
@@ -1091,7 +1085,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	ctrl = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	pr_err("%s: ndx=%d\n", __func__, ctrl->ndx);
+	pr_debug("%s: ndx=%d\n", __func__, ctrl->ndx);
 
 	if (pinfo->dcs_cmd_by_left) {
 		if (ctrl->ndx != DSI_CTRL_LEFT)
@@ -1108,7 +1102,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 			(pinfo->mipi.boot_mode != pinfo->mipi.mode))
 		on_cmds = &ctrl->post_dms_on_cmds;
 
-	pr_err("%s: ndx=%d cmd_cnt=%d\n", __func__,
+	pr_debug("%s: ndx=%d cmd_cnt=%d\n", __func__,
 				ctrl->ndx, on_cmds->cmd_cnt);
 
 	if (on_cmds->cmd_cnt)
@@ -1147,7 +1141,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	mdss_dsi_panel_apply_display_setting(pdata, pinfo->persist_mode);
 
 end:
-	pr_err("%s:-\n", __func__);
+	pr_debug("%s:-\n", __func__);
 	return ret;
 }
 
@@ -1166,7 +1160,7 @@ static int mdss_dsi_post_panel_on(struct mdss_panel_data *pdata)
 	ctrl = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	pr_err("%s: ctrl=%pK ndx=%d\n", __func__, ctrl, ctrl->ndx);
+	pr_debug("%s: ctrl=%pK ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	pinfo = &pdata->panel_info;
 	if (pinfo->dcs_cmd_by_left && ctrl->ndx != DSI_CTRL_LEFT)
@@ -1186,7 +1180,7 @@ static int mdss_dsi_post_panel_on(struct mdss_panel_data *pdata)
 	}
 
 end:
-	pr_err("%s:-\n", __func__);
+	pr_debug("%s:-\n", __func__);
 	return 0;
 }
 
@@ -1204,7 +1198,7 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	ctrl = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	pr_err("%s: ctrl=%pK ndx=%d\n", __func__, ctrl, ctrl->ndx);
+	pr_debug("%s: ctrl=%pK ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	if (pinfo->dcs_cmd_by_left) {
 		if (ctrl->ndx != DSI_CTRL_LEFT)
@@ -1223,7 +1217,7 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	}
 
 end:
-	pr_err("%s:-\n", __func__);
+	pr_debug("%s:-\n", __func__);
 	return 0;
 }
 
@@ -3286,27 +3280,27 @@ static ssize_t msm_fb_lcd_name(struct device *dev,
 
 static DEVICE_ATTR(lcd_name,0664,msm_fb_lcd_name,NULL);
 static struct kobject *msm_lcd_name;
-static int msm_lcd_name_create_sysfs(void){
-   int ret;
-   msm_lcd_name=kobject_create_and_add("android_lcd",NULL);
-   if(msm_lcd_name==NULL){
-     pr_info("msm_lcd_name_create_sysfs_ failed\n");
-     ret=-ENOMEM;
-     return ret;
-   }
-   ret=sysfs_create_file(msm_lcd_name,&dev_attr_lcd_name.attr);
-   if(ret){
-    pr_info("%s failed \n",__func__);
-    kobject_del(msm_lcd_name);
-   }
-   return 0;
+static int msm_lcd_name_create_sysfs(void) {
+	int ret;
+	msm_lcd_name = kobject_create_and_add("android_lcd", NULL);
+	if (msm_lcd_name == NULL) {
+		pr_err("msm_lcd_name_create_sysfs_ failed\n");
+		ret = -ENOMEM;
+		return ret;
+	}
+	ret = sysfs_create_file(msm_lcd_name, &dev_attr_lcd_name.attr);
+	if (ret) {
+		pr_err("%s failed \n", __func__);
+		kobject_del(msm_lcd_name);
+	}
+	return 0;
 }
 
 static ssize_t mdss_fb_get_whitepoint(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl = NULL;
-	int val0 =0;
+	int val0 = 0;
 	int val1 = 0;
 	ssize_t ret = 0;
 	
@@ -3318,20 +3312,20 @@ static ssize_t mdss_fb_get_whitepoint(struct device *dev,
 
 static DEVICE_ATTR(whitepoint, 0644, mdss_fb_get_whitepoint,NULL );
 static struct kobject *msm_whitepoint;
-static int msm_whitepoint_create_sysfs(void){
-   int ret;
-   msm_whitepoint=kobject_create_and_add("android_whitepoint",NULL);
-   if(msm_whitepoint==NULL){
-     pr_info("msm_whitepoint_create_sysfs_ failed\n");
-     ret=-ENOMEM;
-     return ret;
-   }
-   ret=sysfs_create_file(msm_whitepoint,&dev_attr_whitepoint.attr);
-   if(ret){
-    pr_info("%s failed \n",__func__);
-    kobject_del(msm_whitepoint);
-   }
-   return 0;
+static int msm_whitepoint_create_sysfs(void) {
+	int ret;
+	msm_whitepoint = kobject_create_and_add("android_whitepoint", NULL);
+	if (msm_whitepoint == NULL) {
+		pr_err("msm_whitepoint_create_sysfs_ failed\n");
+		ret = -ENOMEM;
+		return ret;
+	}
+	ret = sysfs_create_file(msm_whitepoint, &dev_attr_whitepoint.attr);
+	if (ret) {
+		pr_err("%s failed \n", __func__);
+		kobject_del(msm_whitepoint);
+	}
+	return 0;
 }
 
 int mdss_dsi_panel_init(struct device_node *node,
