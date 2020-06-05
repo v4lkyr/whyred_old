@@ -41,7 +41,7 @@ char g_lcd_id[128];
 struct mdss_dsi_ctrl_pdata *ctrl_pdata_whitepoint;
 EXPORT_SYMBOL(g_lcd_id);
 
-extern bool enable_gesture_mode;
+static bool enable_gesture_mode;
 
 #ifdef CONFIG_KERNEL_CUSTOM_F7A
 #define TP_RESET_GPIO 66
