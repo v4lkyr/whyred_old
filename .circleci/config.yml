@@ -3,6 +3,7 @@ jobs:
   compile:
    docker:
       - image: ubuntu:20.04
+   resource_class: xlarge
    steps:
       - run:
           command: |
@@ -31,7 +32,6 @@ jobs:
                               libc6-dev \
                               git \
                               rsync \
-                              repo \
                               wget \
                               libstdc++6 \
                               libxml2-dev \
