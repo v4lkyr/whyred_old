@@ -1,13 +1,61 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+jobs:
+  compile:
+   docker:
+      - image: ubuntu:20.04
+   steps:
+      - run:
+          command: |
+           export ARCH=arm64
+           export SUBARCH=arm64
+           apt-get -y update && \
+           apt-get -y upgrade && \
+           apt-get -y install build-essential \
+                              kernel-package \
+                              libncurses5-dev \
+                              zlib1g-dev \
+                              libgl1-mesa-dev \
+                              gcc-multilib \
+                              g++-multilib \
+                              python-dev \
+                              llvm-dev \
+                              flex \
+                              bison \
+                              gnupg \
+                              gperf \
+                              libssl-dev \
+                              libesd-java \
+                              bc \
+                              zip \
+                              curl \
+                              libc6-dev \
+                              git \
+                              rsync \
+                              repo \
+                              wget \
+                              libstdc++6 \
+                              libxml2-dev \
+                              libwxgtk3.0-gtk3-dev \
+                              tofrodos
+           git config --global user.name "v4lkyr"
+           git config --global user.email "valkyr23@gmail.com"
+           mkdir android
+           cd android
+           mkdir tools
+           mkdir xiaomi
+           cd tools
+           mkdir toolchains
+           cd toolchains
+           git clone https://github.com/kdrag0n/proton-clang --depth=1
+           cd ..
+           git clone https://github.com/v4lkyr/anykernel3
+           cd ../xiaomi
+           git clone https://github.com/v4lkyr/whyred.git
+           cd whyred
+           git checkout q-oldwifi-eas
+           ./proton-clang-build
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2.1
+  cooking:
     jobs:
-      - welcome/run
+      - compile
